@@ -2,78 +2,37 @@ const express=require('express')
 require('./db/mongoose')
 const User=require('./models/users')
 const Task=require('./models/task')
+const { findByIdAndUpdate, findByIdAndDelete, findOneAndDelete } = require('./models/users')
 const app=express()
 const port=process.env.PORT || 3000
+const userrouter=require('./Routers/userroute')
+const taskrouter=require('./Routers/taskrouter')
+const bcrypt=require('bcrypt')
+
+app.use(userrouter)
+app.use(taskrouter)
 
 app.use(express.json())
-app.post('/users',(req,res) =>{
-    const user=new User(req.body)
-    user.save().then(()=>{
-        res.send(user)
-    }).catch((error) =>{
-        res.status(400).send(error)
-            
-    })
-})
-
-app.get('/users',(req,res) =>{
-    User.find({}).then((users) =>{
-        res.send(users)
-    }).catch((error) =>{
-        res.status(500).send()
-    })
-})
-
-app.get('/users/:id',((req,res) =>{
-    const _id=req.params.id
-    User.findById(_id).then((user) =>{
-        if(!user){
-            return res.status(404).send
-
-        } 
-        res.send(user)
-
-    }).catch((e) =>{
-         res.status(500).send()
-    })
-//   console.log(  req.params)
-}))
-
-app.get('/tasks/:id',((req,res) =>{
-    const _id=req.params.id
-    Task.findById(_id).then((user) =>{
-        if(!user){
-            return res.status(404).send
-
-        } 
-        res.send(user)
-
-    }).catch((e) =>{
-         res.status(500).send()
-    })
-
-}))
-
-
-app.get('/tasks',(req,res) =>{
-    Task.find({}).then((users) =>{
-        res.send(users)
-    }).catch((error) =>{
-        res.status(500).send()
-    })
-})
 
 
 
-app.post('/tasks',(req,res) =>{
-    const task=new Task(req.body)
-    task.save().then(() =>{
-        res.status(201).send(task)
-    }).catch((error) =>{
-        res.status(400).send(error)
-    })
-})
+
+
+
 
 app.listen(port,() =>{
     console.log('Server is up on port'+port)
 })
+
+const myFunction=async() =>{
+    const password='Red1234!'
+    const hashedpassword=await bcrypt.hash(password,8)
+    console.log(password)
+    console.log(hashedpassword)
+
+    const isMatch=await bcrypt.compare('red1234!',hashedpassword)
+    console.log(isMatch)
+
+
+}
+myFunction()
